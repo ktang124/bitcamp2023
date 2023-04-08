@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Company Location Finder</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+      body { margin: 0; padding: 0; }
+      #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id='map'></div>
+    <div id='output'></div>
+    <script>
+      
+
+      var request = new XMLHttpRequest();
+      var address = "2001 Paint Branch Dr, College Park, MD";
+      var access_token = "pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2I2bzlsMDQ2ajNobmx5dDBhczlmMyJ9.6yg3cCNwWU87x7xNAalG5g";
+      var url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + encodeURIComponent(address) + ".json?access_token=" + access_token;
+
+      request.open('GET', url, true);
+      request.onload = function() {
+        if (request.status >= 200 && request.status < 400) {
+          var data = JSON.parse(request.responseText);
+          var longitude = data.features[0].center[0];
+          var latitude = data.features[0].center[1];
+          mapboxgl.accessToken = 'pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2I2bzlsMDQ2ajNobmx5dDBhczlmMyJ9.6yg3cCNwWU87x7xNAalG5g';
+          var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [longitude, latitude],
+            zoom: 12
+          });
+          document.getElementById('output').innerHTML = "<strong>Address:</strong> " + address + "<br><strong>Latitude:</strong> " + latitude + "<br><strong>Longitude:</strong> " + longitude;
+        } else {
+          console.log("Error");
+        }
+      };
+      request.send();
+    </script>
+  </body>
+</html>
