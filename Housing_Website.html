@@ -15,13 +15,7 @@
     <div id='map'></div>
     <div id='output'></div>
     <script>
-      mapboxgl.accessToken = 'pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2I2bzlsMDQ2ajNobmx5dDBhczlmMyJ9.6yg3cCNwWU87x7xNAalG5g';
-      var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-122.4194, 37.7749],
-        zoom: 12
-      });
+      
 
       var request = new XMLHttpRequest();
       var address = "2001 Paint Branch Dr, College Park, MD";
@@ -34,14 +28,14 @@
           var data = JSON.parse(request.responseText);
           var longitude = data.features[0].center[0];
           var latitude = data.features[0].center[1];
-          map.setCenter([longitude, latitude]);
+          mapboxgl.accessToken = 'pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2I2bzlsMDQ2ajNobmx5dDBhczlmMyJ9.6yg3cCNwWU87x7xNAalG5g';
+          var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [longitude, latitude],
+            zoom: 12
+          });
           document.getElementById('output').innerHTML = "<strong>Address:</strong> " + address + "<br><strong>Latitude:</strong> " + latitude + "<br><strong>Longitude:</strong> " + longitude;
-                // get the latitude and longitude values from the output element
-          var latitude = document.getElementById('output').innerHTML.split(',')[0];
-          var longitude = document.getElementById('output').innerHTML.split(',')[1];
-
-          // set the map center to the latitude and longitude values
-          map.setCenter([longitude, latitude]);
         } else {
           console.log("Error");
         }
