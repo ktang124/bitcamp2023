@@ -30,11 +30,18 @@
             zoom: 5
         });
 
+        // Add marker to center of map
+        var marker = new mapboxgl.Marker({
+            color: 'red',
+            size: 30,
+            opacity: 0.7}).setLngLat([-76, 39]).addTo(map);
+
         function updateMap() {
             var lat = parseFloat(document.getElementById('lat').value);
             var lng = parseFloat(document.getElementById('lng').value);
             if (!isNaN(lat) && !isNaN(lng)) {
                 map.flyTo({center: [lng, lat], zoom: 10});
+                marker.setLngLat([lng, lat])
             }
         }
     </script>
