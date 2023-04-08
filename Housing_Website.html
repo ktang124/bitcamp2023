@@ -1,49 +1,169 @@
 <!DOCTYPE html>
-<html>
+<html lang='en'>
+
 <head>
-    <meta charset="utf-8">
-    <title>MapboxGL Map</title>
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet" />
-    <style>
-        body { margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-        #form { position: absolute; top: 10px; left: 10px; z-index: 1; background-color: white; padding: 10px; }
-    </style>
+  <meta charset='utf-8' />
+  <title>Get started with the Isochrone API</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <!-- Import Mapbox GL JS  -->
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css' rel='stylesheet' />
+  <!-- Import Assembly -->
+  <link href='https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css' rel='stylesheet'>
+  <script src='https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.js'></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
 </head>
+
 <body>
+  <!-- Create a container for the map -->
+  <div id='map'></div>
+
+  <div class='absolute fl my24 mx24 py24 px24 bg-gray-faint round'>
+    <form id='params'>
+      <h4 class='txt-m txt-bold mb6'>Choose a travel mode:</h4>
+      <div class='mb12 mr12 toggle-group align-center'>
+        <label class='toggle-container'>
+          <input name='profile' type='radio' value='walking'>
+          <div class='toggle toggle--active-null toggle--null'>Walking</div>
+        </label>
+        <label class='toggle-container'>
+          <input name='profile' type='radio' value='cycling' checked>
+          <div class='toggle toggle--active-null toggle--null'>Cycling</div>
+        </label>
+        <label class='toggle-container'>
+          <input name='profile' type='radio' value='driving'>
+          <div class='toggle toggle--active-null toggle--null'>Driving</div>
+        </label>
+      </div>
+      <h4 class='txt-m txt-bold mb6'>Choose a maximum duration:</h4>
+      <div class='mb12 mr12 toggle-group align-center'>
+        <label class='toggle-container'>
+          <input name='duration' type='radio' value='10' checked>
+          <div class='toggle toggle--active-null toggle--null'>10 min</div>
+        </label>
+        <label class='toggle-container'>
+          <input name='duration' type='radio' value='20'>
+          <div class='toggle toggle--active-null toggle--null'>20 min</div>
+        </label>
+        <label class='toggle-container'>
+          <input name='duration' type='radio' value='30'>
+          <div class='toggle toggle--active-null toggle--null'>30 min</div>
+        </label>
+      </div>
+    </form>
+
     <div id="form">
-        <label for="lat">Latitude:</label>
-        <input type="text" id="lat" name="lat" value="0">
-        <label for="lng">Longitude:</label>
-        <input type="text" id="lng" name="lng" value="0">
-        <button onclick="updateMap()">Go</button>
+      <label for="lat">Latitude:</label>
+      <input type="text" id="lat" name="lat" value="0">
+      <label for="lng">Longitude:</label>
+      <input type="text" id="lng" name="lng" value="0">
+      <button onclick="updateMap()">Go</button>
     </div>
-    <div id="map"></div>
-    <script>
-        mapboxgl.accessToken = 'pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2I2bzlsMDQ2ajNobmx5dDBhczlmMyJ9.6yg3cCNwWU87x7xNAalG5g';
-        var map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v11',
-            center: [-76, 39],
-            zoom: 5
+  </div>
+
+  <script>
+    // Add your Mapbox access token
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2Jqbno5MGxtMjNncXJtMmp4OTVueiJ9.sehQpKCl_zg6M2z6lfojTg';
+    map = new mapboxgl.Map({
+      container: 'map', // Specify the container ID
+      style: 'mapbox://styles/mapbox/streets-v12', // Specify which map style to use
+      center: [-76.9426,38.9869], // Specify the starting position
+      zoom: 11.5, // Specify the starting zoom
+    });
+
+        // Create constants to use in getIso()
+    const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
+    lon = -76.9426;
+    lat = 38.9869;
+    profile = 'cycling'; // Set the default routing profile
+    minutes = 10; // Set the default duration
+
+    // Create a function that sets up the Isochrone API query then makes an fetch call
+    async function getIso() {
+    const query = await fetch(
+        `${urlBase}${profile}/${lon},${lat}?contours_minutes=${minutes}&polygons=true&access_token=${mapboxgl.accessToken}`,
+        { method: 'GET' }
+    );
+    const data = await query.json();
+    // Call the getIso function to update the map with new isochrone data
+    map.flyTo({center: [lon, lat], zoom: 11.5});
+    marker.setLngLat([lon, lat]);
+    map.getSource('iso').setData(data);
+    }
+
+    // Call the getIso function
+    // You will remove this later - it's just here so you can see the console.log results in this step
+    map.on('load', () => {
+        // When the map loads, add the source and layer
+        map.addSource('iso', {
+            type: 'geojson',
+            data: {
+            type: 'FeatureCollection',
+            features: []
+            }
         });
 
-        // Add marker to center of map
-        var marker = new mapboxgl.Marker({
-            color: 'red',
-            size: 30,
-            opacity: 0.7}).setLngLat([-76, 39]).addTo(map);
-
-        function updateMap() {
-            var lat = parseFloat(document.getElementById('lat').value);
-            var lng = parseFloat(document.getElementById('lng').value);
-            if (!isNaN(lat) && !isNaN(lng)) {
-                map.flyTo({center: [lng, lat], zoom: 10});
-                marker.setLngLat([lng, lat])
+        map.addLayer(
+            {
+            id: 'isoLayer',
+            type: 'fill',
+            // Use "iso" as the data source for this layer
+            source: 'iso',
+            layout: {},
+            paint: {
+                // The fill color for the layer is set to a light purple
+                'fill-color': '#5a3fc0',
+                'fill-opacity': 0.3
             }
+            },
+            'poi-label'
+        );
+
+        // Make the API call
+        getIso();
+    });
+
+    // Add marker to center of map
+    var marker = new mapboxgl.Marker({
+        color: 'red',
+        size: 30,
+        opacity: 0.7}).setLngLat([-76, 39]).addTo(map);
+
+    function updateMap() {
+      lat = document.getElementById('lat').value;
+      const lng = document.getElementById('lng').value;
+      const profile = document.querySelector('input[name="profile"]:checked').value;
+      const duration = document.querySelector('input[name="duration"]:checked').value;
+      minutes = duration;
+      lon = lng;
+      getIso();
+    }
+
+    // Target the "params" form in the HTML portion of your code
+    const params = document.getElementById('params');
+
+    // When a user changes the value of profile or duration by clicking a button, change the parameter's value and make the API query again
+    params.addEventListener('change', (event) => {
+        if (event.target.name === 'profile') {
+            profile = event.target.value;
+        } else if (event.target.name === 'duration') {
+            minutes = event.target.value;
         }
-    </script>
+        getIso();
+    });
+  </script>
 </body>
+
 </html>
