@@ -13,6 +13,7 @@
   </head>
   <body>
     <div id='map'></div>
+    <div id='output'></div>
     <script>
       mapboxgl.accessToken = 'pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2I2bzlsMDQ2ajNobmx5dDBhczlmMyJ9.6yg3cCNwWU87x7xNAalG5g';
       var map = new mapboxgl.Map({
@@ -21,6 +22,31 @@
         center: [-122.4194, 37.7749],
         zoom: 12
       });
+
+      var request = new XMLHttpRequest();
+      var address = "2001 Paint Branch Dr, College Park, MD";
+      var access_token = "pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2I2bzlsMDQ2ajNobmx5dDBhczlmMyJ9.6yg3cCNwWU87x7xNAalG5g";
+      var url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + encodeURIComponent(address) + ".json?access_token=" + access_token;
+
+      request.open('GET', url, true);
+      request.onload = function() {
+        if (request.status >= 200 && request.status < 400) {
+          var data = JSON.parse(request.responseText);
+          var longitude = data.features[0].center[0];
+          var latitude = data.features[0].center[1];
+          map.setCenter([longitude, latitude]);
+          document.getElementById('output').innerHTML = "<strong>Address:</strong> " + address + "<br><strong>Latitude:</strong> " + latitude + "<br><strong>Longitude:</strong> " + longitude;
+                // get the latitude and longitude values from the output element
+          var latitude = document.getElementById('output').innerHTML.split(',')[0];
+          var longitude = document.getElementById('output').innerHTML.split(',')[1];
+
+          // set the map center to the latitude and longitude values
+          map.setCenter([longitude, latitude]);
+        } else {
+          console.log("Error");
+        }
+      };
+      request.send();
     </script>
   </body>
 </html>
