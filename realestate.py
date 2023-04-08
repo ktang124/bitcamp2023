@@ -8,10 +8,12 @@ headers = {
 	"X-RapidAPI-Host": "us-real-estate.p.rapidapi.com"
 }
 
-def query(zip, limit, price_min, price_max):
+def query(zip, limit=10, price_min=0, price_max=99999, beds_min=0, beds_max=99, baths_min=0, baths_max=99):
     querystring = {"zipcode":zip,"limit":limit,"offset":"0",
                    "sort":"lowest_price","price_min":price_min,
-                   "price_max":price_max,"property_type":"apartment"}
+                   "price_max":price_max,"property_type":"apartment",
+                   "beds_min":beds_min, "beds_max":beds_max,
+                   "baths_min":baths_min, "baths_max":baths_max}
     response = requests.request("GET", url, headers=headers, params=querystring)
     json_data = json.loads(response.text)
     apts = ((json_data['data'])['home_search'])['results']
@@ -45,11 +47,17 @@ def get_baths(apt):
     return baths
 
 def get_price(apt):
-    categories =['list_price_max','list_price','list_price_min']
-    price = max(apt[prices] if apt[prices] else 0 for prices in categories)
+    if apt['list_price']:
+        price = apt['list_price']
+    elif apt['list_price_min']:
+        price = apt['list_price_min']
+    elif apt['list_price_max']:
+        price = apt['list_price_max']
+    else:
+        price = None
     return price
 
-res = query(80301, 10, 0, 1000)
+res = query(zip=94024, limit=10, price_max=2000)
 
 # f = open('sample.json')
 # json_data = json.load(f)
