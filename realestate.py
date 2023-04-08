@@ -1,6 +1,7 @@
 import requests
 import json
 
+# designate query type
 url = "https://us-real-estate.p.rapidapi.com/v2/for-rent-by-zipcode"
 
 headers = {
@@ -8,6 +9,7 @@ headers = {
 	"X-RapidAPI-Host": "us-real-estate.p.rapidapi.com"
 }
 
+# query US Real Estate API for apartments for rent
 def query(zip, limit=10, price_min=0, price_max=99999, beds_min=0, beds_max=99, baths_min=0, baths_max=99):
     querystring = {"zipcode":zip,"limit":limit,"offset":"0",
                    "sort":"lowest_price","price_min":price_min,
@@ -57,12 +59,12 @@ def get_price(apt):
         price = None
     return price
 
-res = query(zip=94024, limit=10, price_max=2000)
+# res = query(zip=94024, limit=10, price_max=2000)
 
 # f = open('sample.json')
 # json_data = json.load(f)
 # res = ((json_data['data'])['home_search'])['results']
 
-for apt in res:
-    print("Address: " + get_address(apt) + "\nBeds: " + str(get_beds(apt)) + "\nBaths: "
-          + str(get_baths(apt)) + "\nPrice: " + str(get_price(apt)) + "\n\n")
+# for apt in res:
+#     print("Address: " + get_address(apt) + "\nBeds: " + str(get_beds(apt)) + "\nBaths: "
+#           + str(get_baths(apt)) + "\nPrice: " + str(get_price(apt)) + "\n\n")
