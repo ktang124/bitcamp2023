@@ -23,6 +23,10 @@
       bottom: 0;
       width: 100%;
     }
+
+    .mapboxgl-popup {
+      max-width: 200px;
+    }
   </style>
 </head>
 
@@ -98,7 +102,8 @@
       // Call the getIso function to update the map with new isochrone data
       map.flyTo({center: [lon, lat], zoom: 11.5});
       marker.setLngLat([lon, lat]);
-      addMarkers([[lon+0.005, lat], [lon+0.005, lat+0.005]])
+      coordArr = [[lon+0.005, lat], [lon+0.005, lat+0.005]]
+      addMarkers(coordArr, priceArr, bedroomsArr, bathroomsArr);
       map.getSource('iso').setData(data);
     }
 
@@ -160,14 +165,22 @@
       })();
     }
 
+    var coordArr = [[lon+0.005, lat], [lon+0.005, lat+0.005]]
     var markerArr = [];
+    var priceArr = [970000, 550000];
+    var bedroomsArr = [7, 4];
+    var bathroomsArr = [7, 2];
 
-    function addMarkers(coordArr) {
+    function addMarkers(coordArr, priceArr, bedroomsArr, bathroomsArr) {
       for (let i = 0; i < coordArr.length; i++) {
+        const popup = new mapboxgl.Popup({ offset: 25 }).setText(
+        'Bedrooms: ' + bedroomsArr[i] + ', Bathrooms: ' + bathroomsArr[i] + ', Price: ' + priceArr[i]
+        );
+
         var marker2 = new mapboxgl.Marker({
         color: 'green',
         size: 30,
-        opacity: 0.7}).setLngLat([coordArr[i][0], coordArr[i][1]]).addTo(map);
+        opacity: 0.7}).setLngLat([coordArr[i][0], coordArr[i][1]]).setPopup(popup).addTo(map);
         markerArr.push(marker2);
       }
     }
