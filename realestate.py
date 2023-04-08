@@ -11,6 +11,18 @@ headers = {
 }
 
 
+def allCompanies():
+    filename = "companyOffices.csv"
+    data = open(filename, 'r')
+    comps = []
+    for line in csv.reader(data):
+        comp, city, state, longitude, latitude, address = line
+        if comp not in comps:
+            comps.append(comp)
+
+    return comps
+
+
 def companyAddress(company: str, location: str):
     # csv, Adobe,San Jose,CA,37.331761,-121.893546,"345 Park Ave, San Jose, CA 95110"
     #line: ['Uber', 'New York City', 'NY', '40.7111415', '-74.0092626', '1400 Broadway Suite 1801, New York, NY 10018']
