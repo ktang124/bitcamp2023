@@ -1,4 +1,4 @@
 # bitcamp2023
 
 mapbox key
-pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2I2bzlsMDQ2ajNobmx5dDBhczlmMyJ9.6yg3cCNwWU87x7xNAalG5g
+pk.eyJ1Ijoia3RhbmcxMjQiLCJhIjoiY2xnN2Jqbno5MGxtMjNncXJtMmp4OTVueiJ9.sehQpKCl_zg6M2z6lfojTg
