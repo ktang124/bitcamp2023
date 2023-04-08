@@ -2,6 +2,7 @@ import requests
 import json
 import csv
 
+# designate query type
 url = "https://us-real-estate.p.rapidapi.com/v2/for-rent-by-zipcode"
 
 headers = {
@@ -22,9 +23,6 @@ def companyAddress(company: str, location: str):
             return address
 
     return ''
-
-
-print(companyAddress('Adobe', 'San Jose'))
 
 
 def companyCities(company: str):
@@ -50,10 +48,11 @@ def queryCompanyHousing(company: str, location: str, limit, price_min, price_max
     return ''
 
 
-def query(zip, limit, price_min, price_max):
+def query(zip, limit=10, price_min=0, price_max=99999, beds_min=0, beds_max=99, baths_min=0, baths_max=99):
     querystring = {"zipcode": zip, "limit": limit, "offset": "0",
                    "sort": "lowest_price", "price_min": price_min,
-                   "price_max": price_max, "property_type": "apartment"}
+                   "price_max": price_max, "property_type": "apartment", "beds_min": beds_min,
+                   "beds_max": beds_max, "baths_min": baths_min, "baths_max": baths_max}
     response = requests.request(
         "GET", url, headers=headers, params=querystring)
     json_data = json.loads(response.text)
@@ -99,17 +98,22 @@ def get_baths(apt):
 
 
 def get_price(apt):
-    categories = ['list_price_max', 'list_price', 'list_price_min']
-    price = max(apt[prices] if apt[prices] else 0 for prices in categories)
+    if apt['list_price']:
+        price = apt['list_price']
+    elif apt['list_price_min']:
+        price = apt['list_price_min']
+    elif apt['list_price_max']:
+        price = apt['list_price_max']
+    else:
+        price = None
     return price
 
-
-res = queryCompanyHousing('Adobe', 'San Jose', 10, 0, 1000)
+# res = query(zip=94024, limit=10, price_max=2000)
 
 # f = open('sample.json')
 # json_data = json.load(f)
 # res = ((json_data['data'])['home_search'])['results']
 
-for apt in res:
-    print("Address: " + get_address(apt) + "\nBeds: " + str(get_beds(apt)) + "\nBaths: "
-          + str(get_baths(apt)) + "\nPrice: " + str(get_price(apt)) + "\n\n")
+# for apt in res:
+#     print("Address: " + get_address(apt) + "\nBeds: " + str(get_beds(apt)) + "\nBaths: "
+#           + str(get_baths(apt)) + "\nPrice: " + str(get_price(apt)) + "\n\n")
