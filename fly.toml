@@ -1,0 +1,45 @@
+# fly.toml file generated for temphouse on 2023-04-09T07:19:27-04:00
+
+app = "temphouse"
+kill_signal = "SIGINT"
+kill_timeout = 5
+mounts = []
+primary_region = "iad"
+processes = ["web"]
+
+[[services]]
+internal_port = 3000
+processes = ["web"]
+protocol = "tcp"
+[services.concurrency]
+hard_limit = 25
+soft_limit = 20
+type = "connections"
+
+[[services.ports]]
+force_https = true
+handlers = ["http"]
+port = 80
+
+[[services.ports]]
+handlers = ["tls", "http"]
+port = 443
+[[services]]
+internal_port = 8000
+processes = ["web"]
+protocol = "tcp"
+[services.concurrency]
+hard_limit = 25
+soft_limit = 20
+type = "connections"
+
+[[services.ports]]
+force_https = true
+handlers = ["http"]
+port = 8000
+
+[[services.ports]]
+handlers = ["tls", "http"]
+port = 8001
+
+
