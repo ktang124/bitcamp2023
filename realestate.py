@@ -48,14 +48,14 @@ def companyCities(company: str):
     return res
 
 
-def queryCompanyHousing(company: str, location: str, limit, price_min, price_max):
+def queryCompanyHousing(company: str, location: str, limit=10, price_min=0, price_max=99999, beds_min=0, beds_max=99, baths_min=0, baths_max=99):
     filename = "companyOffices.csv"
     data = open(filename, 'r')
     for line in csv.reader(data):
         comp, city, state, longitude, latitude, address = line
         zip = int(address[len(address)-5:len(address)])
         if comp == company and city == location:
-            return query(zip, limit, price_min, price_max)
+            return query(zip, limit, price_min, price_max, beds_min, beds_max, baths_min, baths_max)
 
     return ''
 
