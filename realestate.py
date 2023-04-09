@@ -63,7 +63,7 @@ def queryCompanyHousing(company: str, location: str, limit=10, price_min=0, pric
 def query(zip, limit=10, price_min=0, price_max=99999, beds_min=0, beds_max=99, baths_min=0, baths_max=99):
     querystring = {"zipcode": zip, "limit": limit, "offset": "0",
                    "sort": "lowest_price", "price_min": price_min,
-                   "price_max": price_max, "property_type": "apartment", "beds_min": beds_min,
+                   "price_max": price_max, "property_type": "apartment,condo,condop", "beds_min": beds_min,
                    "beds_max": beds_max, "baths_min": baths_min, "baths_max": baths_max}
     response = requests.request(
         "GET", url, headers=headers, params=querystring)

@@ -27,6 +27,16 @@
     .mapboxgl-popup {
       max-width: 200px;
     }
+
+    #marker {
+      background-image: url('https://docs.mapbox.com/mapbox-gl-js/assets/washington-monument.jpg');
+      background-size: cover;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 
@@ -84,11 +94,17 @@
       center: [-76.9426,38.9869], // Specify the starting position
       zoom: 11.5, // Specify the starting zoom
     });
+    var coordArr = [[-76.95,38.9869], [-76.95,38.99]]
+    var markerArr = [];
+    var priceArr = [970000, 550000];
+    var bedroomsArr = [7, 4];
+    var bathroomsArr = [7, 2];
+    addMarkers(coordArr, priceArr, bedroomsArr, bathroomsArr);
 
         // Create constants to use in getIso()
     const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
-    lon = -76.9426;
-    lat = 38.9869;
+    var lon = -76.9426;
+    var lat = 38.9869;
     profile = 'cycling'; // Set the default routing profile
     minutes = 10; // Set the default duration
 
@@ -100,10 +116,7 @@
       );
       const data = await query.json();
       // Call the getIso function to update the map with new isochrone data
-      map.flyTo({center: [lon, lat], zoom: 11.5});
-      marker.setLngLat([lon, lat]);
-      coordArr = [[lon+0.005, lat], [lon+0.005, lat+0.005]]
-      addMarkers(coordArr, priceArr, bedroomsArr, bathroomsArr);
+      map.flyTo({center: [lon, lat], zoom: 13});
       map.getSource('iso').setData(data);
     }
 
@@ -143,7 +156,7 @@
     var marker = new mapboxgl.Marker({
         color: 'red',
         size: 30,
-        opacity: 0.7}).setLngLat([-76, 39]).addTo(map);
+        opacity: 0.7}).setLngLat([-76.9426,38.9869]).addTo(map);
 
     function updateMap() {
       var longlat;
@@ -157,7 +170,10 @@
           const duration = document.querySelector('input[name="duration"]:checked').value;
           minutes = duration;
           lon = lng;
-          removeMarkers
+          removeMarkers(markerArr);
+          coordArr = [[lon+0.005, lat], [lon+0.005, lat+0.005]];
+          addMarkers(coordArr, priceArr, bedroomsArr, bathroomsArr);
+          marker.setLngLat([lon, lat]);
           getIso();
         } catch (error) {
           console.error(error);
@@ -165,22 +181,25 @@
       })();
     }
 
-    var coordArr = [[lon+0.005, lat], [lon+0.005, lat+0.005]]
-    var markerArr = [];
-    var priceArr = [970000, 550000];
-    var bedroomsArr = [7, 4];
-    var bathroomsArr = [7, 2];
-
     function addMarkers(coordArr, priceArr, bedroomsArr, bathroomsArr) {
       for (let i = 0; i < coordArr.length; i++) {
         const popup = new mapboxgl.Popup({ offset: 25 }).setText(
         'Bedrooms: ' + bedroomsArr[i] + ', Bathrooms: ' + bathroomsArr[i] + ', Price: ' + priceArr[i]
         );
 
-        var marker2 = new mapboxgl.Marker({
-        color: 'green',
-        size: 30,
-        opacity: 0.7}).setLngLat([coordArr[i][0], coordArr[i][1]]).setPopup(popup).addTo(map);
+        popup.on('open', () => {
+          lon = coordArr[i][0];
+          lat = coordArr[i][1];
+          console.log(lon);
+          console.log(lat);
+          getIso();
+        });
+
+        // create DOM element for the marker
+        const el = document.createElement('div');
+        el.id = 'marker';
+
+        var marker2 = new mapboxgl.Marker(el).setLngLat([coordArr[i][0], coordArr[i][1]]).setPopup(popup).addTo(map);
         markerArr.push(marker2);
       }
     }
