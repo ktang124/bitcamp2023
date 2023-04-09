@@ -3,7 +3,7 @@ import json
 import csv
 
 # designate query type
-url = "https://us-real-estate.p.rapidapi.com/v2/for-rent-by-zipcode"
+url = "https://us-real-estate.p.rapidapi.com/v2/for-rent"
 
 headers = {
     "X-RapidAPI-Key": "09bca80104msh15e694ff58ae934p1dbb1djsnc6a79bbc62eb",
@@ -25,12 +25,12 @@ def allCompanies():
 
 def companyAddress(company: str, location: str):
     # csv, Adobe,San Jose,CA,37.331761,-121.893546,"345 Park Ave, San Jose, CA 95110"
-    #line: ['Uber', 'New York City', 'NY', '40.7111415', '-74.0092626', '1400 Broadway Suite 1801, New York, NY 10018']
+    # line: ['Uber', 'New York City', 'NY', '40.7111415', '-74.0092626', '1400 Broadway Suite 1801, New York, NY 10018']
     filename = "companyOffices.csv"
     data = open(filename, 'r')
     for line in csv.reader(data):
         comp, city, state, longitude, latitude, address = line
-        #zip = int(address[len(address)-5:len(address)])
+        # zip = int(address[len(address)-5:len(address)])
         if comp == company and city == location:
             return address
 
@@ -61,7 +61,7 @@ def queryCompanyHousing(company: str, location: str, limit=10, price_min=0, pric
 
 
 def query(zip, limit=10, price_min=0, price_max=99999, beds_min=0, beds_max=99, baths_min=0, baths_max=99):
-    querystring = {"zipcode": zip, "limit": limit, "offset": "0",
+    querystring = {"location": zip, "limit": limit, "offset": "0",
                    "sort": "lowest_price", "price_min": price_min,
                    "price_max": price_max, "property_type": "apartment,condo,condop", "beds_min": beds_min,
                    "beds_max": beds_max, "baths_min": baths_min, "baths_max": baths_max}
@@ -120,12 +120,19 @@ def get_price(apt):
         price = None
     return price
 
-# res = query(zip=94024, limit=10, price_max=2000)
 
-# f = open('sample.json')
-# json_data = json.load(f)
-# res = ((json_data['data'])['home_search'])['results']
+# res = query(zip=95014, limit=20, price_max=2000)
 
-# for apt in res:
-#     print("Address: " + get_address(apt) + "\nBeds: " + str(get_beds(apt)) + "\nBaths: "
-#           + str(get_baths(apt)) + "\nPrice: " + str(get_price(apt)) + "\n\n")
+
+# json_object = json.dumps(res)
+# print(json_object)
+# with open("sample2.json", "w") as outfile:
+    # json.dump(json_string, outfile)
+    #
+f = open('sample2.json')
+res = json.load(f)
+#res = ((json_data['data'])['home_search'])['results']
+
+for apt in res:
+    print("Address: " + get_address(apt) + "\nBeds: " + str(get_beds(apt)) + "\nBaths: "
+          + str(get_baths(apt)) + "\nPrice: " + str(get_price(apt)) + "\n\n")
