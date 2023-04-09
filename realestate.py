@@ -6,7 +6,7 @@ import csv
 url = "https://us-real-estate.p.rapidapi.com/v2/for-rent"
 
 headers = {
-    "X-RapidAPI-Key": "09bca80104msh15e694ff58ae934p1dbb1djsnc6a79bbc62eb",
+    "X-RapidAPI-Key": "",
     "X-RapidAPI-Host": "us-real-estate.p.rapidapi.com"
 }
 
